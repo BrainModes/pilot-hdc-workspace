@@ -1,6 +1,4 @@
-FROM python:3.9-buster AS production-environment
-
-WORKDIR /usr/src/app
+FROM docker-registry.ebrains.eu/hdc-services-image/base-image:python-3.10.14-v1 AS production-environment
 
 ENV TZ=America/Toronto
 
@@ -14,18 +12,14 @@ ENV PATH="${POETRY_HOME}/bin:${PATH}"
 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone && \
-    apt-get update && \
-    apt-get install -y libsasl2-dev python-dev libldap2-dev libssl-dev vim-tiny less && \
-    ln -s /usr/bin/vim.tiny /usr/bin/vim && \
-    rm -rf /var/lib/apt/lists/*
-
 COPY poetry.lock pyproject.toml ./
 RUN poetry install --no-dev --no-root --no-interaction
 COPY . .
 
 FROM production-environment AS workspace-image
+
+RUN chown -R app:app /app
+USER app
 
 CMD ["python", "run.py"]
 

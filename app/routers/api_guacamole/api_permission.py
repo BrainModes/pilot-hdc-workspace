@@ -1,9 +1,9 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import BackgroundTasks
 from fastapi import Depends
@@ -13,7 +13,7 @@ from fastapi_utils.cbv import cbv
 from app.commons.auth_service import get_project_users
 from app.commons.guacamole_client import add_users_bulk
 from app.commons.guacamole_client import get_guacamole_client
-from app.config import ConfigClass
+from app.logger import logger
 from app.models.base import EAPIResponseCode
 from app.models.models_permission import CreateUser
 from app.models.models_permission import CreateUserBulk
@@ -30,14 +30,6 @@ API_TAG = 'Permission'
 
 @cbv(router)
 class Permission:
-    logger = LoggerFactory(
-        'api_permission',
-        level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-        level_file=ConfigClass.LOG_LEVEL_FILE,
-        level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-        level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-    ).get_logger()
-
     @router.get(
         '/guacamole/permission',
         summary='Get permissons on a connection for a user',
@@ -71,7 +63,7 @@ class Permission:
             )
         response = guacamole_client.grant_permission(data.username, payload)
         if response.status_code != 204:
-            self.logger.error(f'Erroring updating guacamole permissions: {response}')
+            logger.error(f'Erroring updating guacamole permissions: {response}')
             raise APIException(
                 status_code=response.status_code, error_msg='Error updating guacamole permisisons: {response.json()}'
             )
@@ -80,14 +72,6 @@ class Permission:
 
 @cbv(router)
 class User:
-    logger = LoggerFactory(
-        'api_permission',
-        level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-        level_file=ConfigClass.LOG_LEVEL_FILE,
-        level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-        level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-    ).get_logger()
-
     @router.post(
         '/guacamole/users',
         summary='Create a new user in guacamole',
@@ -115,7 +99,7 @@ class User:
         try:
             guacamole_client.add_user(payload)
         except Exception as e:
-            self.logger.error(f'Error adding user in guacamole: {e}')
+            logger.error(f'Error adding user in guacamole: {e}')
             raise APIException(
                 error_msg='User already exists in guacamole', status_code=EAPIResponseCode.bad_request.value
             )
@@ -126,14 +110,6 @@ class User:
 
 @cbv(router)
 class ProjectUsers:
-    logger = LoggerFactory(
-        'api_permission',
-        level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-        level_file=ConfigClass.LOG_LEVEL_FILE,
-        level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-        level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-    ).get_logger()
-
     @router.post(
         '/guacamole/project/users',
         summary='Create a new user in guacamole',

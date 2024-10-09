@@ -1,16 +1,16 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
-from common import LoggerFactory
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi_utils.cbv import cbv
 from requests.exceptions import HTTPError
 
 from app.commons.guacamole_client import get_guacamole_client
-from app.config import ConfigClass
+from app.logger import logger
 from app.models.base import APIResponse
 from app.models.models_connection import DeleteConnection
 from app.models.models_connection import DeleteConnectionResponse
@@ -25,14 +25,6 @@ API_TAG = 'Connection'
 
 @cbv(router)
 class Connection:
-    logger = LoggerFactory(
-        'api_guacamole',
-        level_default=ConfigClass.LOG_LEVEL_DEFAULT,
-        level_file=ConfigClass.LOG_LEVEL_FILE,
-        level_stdout=ConfigClass.LOG_LEVEL_STDOUT,
-        level_stderr=ConfigClass.LOG_LEVEL_STDERR,
-    ).get_logger()
-
     @router.get(
         '/guacamole/connection',
         summary='Get connections for a project',
@@ -71,7 +63,7 @@ class Connection:
         try:
             result = guacamole_client.add_connection(payload)
         except HTTPError as e:
-            self.logger.error(f'Error adding guacamole connection: {e}')
+            logger.error(f'Error adding guacamole connection: {e}')
             raise APIException(
                 status_code=e.response.status_code, error_msg=f'Error adding guacamole connection: {e.response.json()}'
             )
@@ -91,7 +83,7 @@ class Connection:
         try:
             guacamole_client.delete_connection(connection['identifier'])
         except HTTPError as e:
-            self.logger.error(f'Erroring deleting guacamole connection: {e}')
+            logger.error(f'Erroring deleting guacamole connection: {e}')
             raise APIException(
                 status_code=e.response.status_code, error_msg='Error deleting guacamole connection: {e.response.json()}'
             )

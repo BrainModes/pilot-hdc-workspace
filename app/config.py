@@ -1,6 +1,7 @@
-# Copyright (C) 2022-2023 Indoc Systems
+# Copyright (C) 2022-Present Indoc Systems
 #
-# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
+# Licensed under the GNU AFFERO GENERAL PUBLIC LICENSE,
+# Version 3.0 (the "License") available at https://www.gnu.org/licenses/agpl-3.0.en.html.
 # You may not use this file except in compliance with the License.
 
 import logging
@@ -44,6 +45,9 @@ class Settings(BaseSettings):
     HOST: str = '0.0.0.0'
     PORT: int = 5068
 
+    LOGGING_LEVEL: int = logging.INFO
+    LOGGING_FORMAT: str = 'json'
+
     AUTH_SERVICE: str
 
     WORKSPACE_PREFIX: str = 'workspace'
@@ -52,11 +56,6 @@ class Settings(BaseSettings):
     GUACAMOLE_USERNAME: str
     GUACAMOLE_PASSWORD: str
     GUACAMOLE_URL_PATH: str
-
-    LOG_LEVEL_DEFAULT = logging.WARN
-    LOG_LEVEL_FILE = logging.WARN
-    LOG_LEVEL_STDOUT = logging.WARN
-    LOG_LEVEL_STDERR = logging.ERROR
 
     class Config:
         env_file = '.env'
